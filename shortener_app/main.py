@@ -21,7 +21,7 @@ def get_db():
         db.close()
 
 
-@app.get('/')
+@app.get('/healthCheck')
 def get_root():
     return "Welcome to the URL Shortener App"
 
@@ -34,6 +34,7 @@ def raise_not_found(request: Request):
     message = f'URL ({request.url}) does not exists!'
     raise HTTPException(status_code=404, detail=message)
 
+
 @app.get(
     '/admin/all',
     response_model=List[AllUrls]
@@ -43,6 +44,7 @@ def get_all_urls(request: Request, db: Session = Depends(get_db)):
         return url_info
     else:
         raise_bad_request(message="Error while fetching all records")
+
 
 @app.post('/url', response_model=URLInfo)
 def create_url(url: URLBase, db: Session = Depends(get_db)):
