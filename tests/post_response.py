@@ -1,4 +1,4 @@
-{
+valid_post_resp = {
     "target_url": "https://realpython.com",
     "is_active": True,
     "clicks": 0,
