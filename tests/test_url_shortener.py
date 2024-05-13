@@ -16,6 +16,7 @@ def test_get_all_urls():
 
     print(response.__dict__)
     print(response.json())
-    assert False
+    assert response.status_code == 200
+    assert response.json() == []
 
 
