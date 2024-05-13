@@ -14,8 +14,6 @@ def test_healthCheck():
 def test_get_all_urls():
     response = client.get("/admin/all")
 
-    print(response.__dict__)
-    print(response.json())
     assert response.status_code == 200
     assert response.json() == []
 
