@@ -21,11 +21,6 @@ def get_db():
         db.close()
 
 
-@app.get('/healthCheck')
-def get_root():
-    return "Welcome to the URL Shortener App"
-
-
 def raise_bad_request(message: str):
     raise HTTPException(status_code=400, detail=message)
 
@@ -33,6 +28,11 @@ def raise_bad_request(message: str):
 def raise_not_found(request: Request):
     message = f'URL ({request.url}) does not exists!'
     raise HTTPException(status_code=404, detail=message)
+
+
+@app.get('/healthCheck')
+def get_root():
+    return "Welcome to the URL Shortener App"
 
 
 @app.get(
