@@ -20,9 +20,9 @@ function Navbar() {
                     <Link to="/" className="py-4 px-2 text-gray-500 font-semibold">
                         Home
                     </Link>
-                    {/* <Link to="/admin" className="py-4 px-2 text-gray-500 font-semibold hover:text-purple-500 transition duration-300">
+                    <Link to="/admin" className="py-4 px-2 text-gray-500 font-semibold hover:text-purple-500 transition duration-300">
                         Admin
-                    </Link> */}
+                    </Link>
                 </div>
             </div>
         </div>

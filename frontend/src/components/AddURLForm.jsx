@@ -26,12 +26,12 @@ function AddURLForm({ sendDataToParent }) {
       body: JSON.stringify(formData)
     })
     .then(response => response.json())
-    .then(data => setNewShortenedUrl(data['url']))
+    .then((data) => {
+      sendDataToParent(data['url']);
+    })
     .catch(error => {
       console.error('There was an error submitting the form!', error);
     });
-
-    sendDataToParent(newShortenedUrl);
   
   }
 
