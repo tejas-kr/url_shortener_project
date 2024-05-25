@@ -58,8 +58,12 @@ def get_root():
     response_model=List[AllUrls]
 )
 def get_all_urls(request: Request, db: Session = Depends(get_db)):
-    if url_info := crud.get_all_urls_data(db):
-        return url_info
+    if url_infos := crud.get_all_urls_data(db):
+        resp_url_infos = []
+        for url_info in url_infos:
+            mod_url_info = create_complete_urls(url_info)
+            resp_url_infos.append(mod_url_info)
+        return resp_url_infos
     else:
         raise_bad_request(message="Error while fetching all records")
 
