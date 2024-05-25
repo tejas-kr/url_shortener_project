@@ -4,14 +4,32 @@ from sqlalchemy.orm import Session
 from starlette import datastructures
 from shortener_app import models, crud, config
 from fastapi.responses import RedirectResponse
+from fastapi.middleware.cors import CORSMiddleware
 from shortener_app.database import SessionLocal, engine
-from shortener_app.schemas import URLBase, URL, URLInfo, AllUrls
+from shortener_app.schemas import URLBase, URLInfo, AllUrls
 from fastapi import FastAPI, HTTPException, Depends, Request
 
 
 app = FastAPI()
+
+origins = ["*",]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 models.Base.metadata.create_all(bind=engine)
 
+def create_complete_urls(db_url: models.URL) -> models.URL:
+    base_url = datastructures.URL(url=config.get_settings().base_url)
+    db_url.url = str(base_url.replace(path=db_url.key))
+    db_url.admin_url = str(base_url.replace(path=db_url.secret_key))
+    return db_url
+    
 
 def get_db():
     db = SessionLocal()
@@ -32,7 +50,7 @@ def raise_not_found(request: Request):
 
 @app.get('/healthCheck')
 def get_root():
-    return "Welcome to the URL Shortener App"
+    return {"msg": "Welcome to the URL Shortener App"}
 
 
 @app.get(
@@ -40,8 +58,12 @@ def get_root():
     response_model=List[AllUrls]
 )
 def get_all_urls(request: Request, db: Session = Depends(get_db)):
-    if url_info := crud.get_all_urls_data(db):
-        return url_info
+    if url_infos := crud.get_all_urls_data(db):
+        resp_url_infos = []
+        for url_info in url_infos:
+            mod_url_info = create_complete_urls(url_info)
+            resp_url_infos.append(mod_url_info)
+        return resp_url_infos
     else:
         raise_bad_request(message="Error while fetching all records")
 
@@ -52,6 +74,7 @@ def create_url(url: URLBase, db: Session = Depends(get_db)):
         raise_bad_request(message="Your provided URL is not Valid!")
 
     db_url = crud.create_db_url(db=db, url=url)
+    db_url = create_complete_urls(db_url=db_url)
 
     return db_url
 
@@ -78,12 +101,9 @@ def get_url_info(
     secret_key: str, 
     request: Request, 
     db: Session = Depends(get_db)
-):
-    base_url = datastructures.URL(url=config.get_settings().base_url)
-    
+):  
     if db_url := crud.get_db_url_by_secret_key(db=db, secret_key=secret_key):
-        db_url.url = str(base_url.replace(path=db_url.key))
-        db_url.admin_url = str(base_url.replace(path=db_url.secret_key))
+        db_url = create_complete_urls(db_url=db_url)
         return db_url
     else:
         raise_not_found(request)

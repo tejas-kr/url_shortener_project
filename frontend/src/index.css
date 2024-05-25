@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  h1 {
+    @apply text-6xl font-semibold font-poetsen-one-regular
+  }
+}
+
+@layer base {
+  body {
+    @apply bg-gradient-to-r from-indigo-200;
+    @apply text-blue-950 font-raleway-100 font-normal;
+  }
+}
+

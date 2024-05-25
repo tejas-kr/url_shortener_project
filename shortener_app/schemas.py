@@ -13,11 +13,12 @@ class URL(URLBase):
         orm_model = True
 
 
-class AllUrls(URL):
-    key: str
-    secret_key: str
-
-
 class URLInfo(URL):
     url: str
     admin_url: str
+
+
+class AllUrls(URLInfo):
+    key: str
+    secret_key: str
+
